@@ -80,7 +80,7 @@ def match_institute(institute_raw: str, cache: dict) -> tuple[int | None, str]:
     return None, ""
 
 
-def parse_row_direct(row_data: dict[str, Any], pdf_name: str) -> tuple[dict[str, Any] | None, list[str]]:
+def parse_row_direct(row_data: dict[str, Any], pdf_name: str, round_key: str = "") -> tuple[dict[str, Any] | None, list[str]]:
     flags: list[str] = []
 
     values = []
@@ -99,7 +99,33 @@ def parse_row_direct(row_data: dict[str, Any], pdf_name: str) -> tuple[dict[str,
 
     val_count = len(values)
 
-    if val_count == 8:
+    if round_key == "R2" and val_count >= 13:
+        serial_no = values[0]
+        rank_raw = values[1]
+        quota = values[6]
+        institute = values[7]
+        course = values[8]
+        allotted_cat = values[9]
+        candidate_cat = values[10]
+        remarks = values[12]
+
+        if not quota:
+            return None, ["R1_RETAINED"]
+
+    elif round_key == "R3" and val_count >= 15:
+        serial_no = ""
+        rank_raw = values[0]
+        quota = values[9]
+        institute = values[10]
+        course = values[11]
+        allotted_cat = values[12]
+        candidate_cat = values[13]
+        remarks = values[15] if val_count > 15 else ""
+
+        if not quota:
+            return None, ["R2_RETAINED"]
+
+    elif val_count == 8:
         serial_no = values[0]
         rank_raw = values[1]
         quota = values[2]
@@ -123,27 +149,15 @@ def parse_row_direct(row_data: dict[str, Any], pdf_name: str) -> tuple[dict[str,
     elif val_count >= 13:
         serial_no = values[0]
         rank_raw = values[1]
-        quota_r2 = values[2]
-        inst_r2 = values[3]
-        course_r2 = values[4]
-        remarks_r2 = values[5]
-        quota_r1 = values[6]
-        inst_r1 = values[7]
-        course_r1 = values[8]
+        quota = values[6]
+        institute = values[7]
+        course = values[8]
         allotted_cat = values[9]
         candidate_cat = values[10]
-        option_no = values[11]
         remarks = values[12]
 
-        quota = quota_r2 if quota_r2 else quota_r1
-        institute = inst_r2 if inst_r2 else inst_r1
-        course = course_r2 if course_r2 else course_r1
-        remarks = remarks_r2 if remarks_r2 else remarks
-
-        if inst_r2 and inst_r1 and inst_r2 != inst_r1:
-            flags.append("R1R2_INSTITUTE_DIFFERENT")
-        elif not inst_r2 and inst_r1:
-            flags.append("R1_RETAINED")
+        if not quota:
+            return None, ["PREV_ROUND_RETAINED"]
 
     elif val_count >= 9:
         serial_no = values[0]
@@ -229,7 +243,7 @@ def main() -> int:
         batch: list[dict] = []
         skipped = 0
         for raw in staged:
-            extracted, flags = parse_row_direct(raw.row_data, pdf_name)
+            extracted, flags = parse_row_direct(raw.row_data, pdf_name, round_key)
             if extracted is None:
                 skipped += 1
                 continue
