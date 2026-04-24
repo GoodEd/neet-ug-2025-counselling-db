@@ -224,7 +224,7 @@ def reconstruct_tables(rows: list[dict[str, Any]]) -> list[list[dict[str, str]]]
             converted: dict[str, str] = {}
             for idx in range(min(len(headers), len(row_values))):
                 h = headers[idx]
-                if h and h not in converted:
+                if h:
                     converted[h] = row_values[idx]
             if any(converted.values()):
                 table_rows.append(converted)
@@ -411,6 +411,8 @@ def load_allotment_results(engine, schema: str) -> None:
                 for row in table_rows:
                     rank_raw = row.get("Rank", "")
                     if not rank_raw.isdigit():
+                        continue
+                    if row.get("Allotted Quota", "").strip() in ("-", ""):
                         continue
                     institution = extract_institution_details(row["Allotted Institute"])
                     institution_id = _cached_dim_id(
