@@ -61,6 +61,46 @@ MERGE_GROUPS: list[dict] = [
         "clean_label": "Non-Resident Indian(Jamia)Quota",
         "dirty_ids": [6054, 6062],
     },
+    {
+        "canonical_id": 6023,
+        "clean_label": "Deemed/Paid Seats Quota",
+        "dirty_ids": [6077],
+    },
+    {
+        "canonical_id": 6025,
+        "clean_label": "Employees State Insurance Scheme(ESI)",
+        "dirty_ids": [6076],
+    },
+    {
+        "canonical_id": 6027,
+        "clean_label": "Delhi NCR Children/Widows of Personnel of the Armed Forces (CW) DU Quota",
+        "dirty_ids": [6075],
+    },
+    {
+        "canonical_id": 6028,
+        "clean_label": "Delhi NCR Children/Widows of Personnel of the Armed Forces (CW) IP Quota",
+        "dirty_ids": [6081],
+    },
+    {
+        "canonical_id": 6038,
+        "clean_label": "Non-Resident Indian",
+        "dirty_ids": [6080],
+    },
+    {
+        "canonical_id": 6040,
+        "clean_label": "Non-Resident Indian(AMU)Quota",
+        "dirty_ids": [6074],
+    },
+    {
+        "canonical_id": 6048,
+        "clean_label": "Internal - Puducherry UT Domicile",
+        "dirty_ids": [6078],
+    },
+    {
+        "canonical_id": 6063,
+        "clean_label": "Employees State Insurance Scheme Nursing Quota (ESI-IP Quota Nursing)",
+        "dirty_ids": [6073, 6079],
+    },
 ]
 
 
@@ -88,7 +128,6 @@ def _delete_shadowed_cutoffs(conn, schema: str, dirty_id: int, canonical_id: int
                   AND rc_canon.institution_id = rc_dirty.institution_id
                   AND rc_canon.program_id = rc_dirty.program_id
                   AND rc_canon.allotted_result_category_id = rc_dirty.allotted_result_category_id
-                  AND rc_canon.candidate_result_category_id = rc_dirty.candidate_result_category_id
               )
             """
         ),
