@@ -37,3 +37,6 @@ Thumbs.db
 
 # Agent working directory
 .sisyphus/
+
+# Large DB dumps (plain SQL) — kept locally only
+dumps/*.sql
